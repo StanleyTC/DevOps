@@ -1,0 +1,1 @@
+api gateway using a lambda function to access a database (dynamoDB)
