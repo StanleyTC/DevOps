@@ -1,3 +1,4 @@
+//responsible for normalizing the event (payload) we receive, and will pass to our lambda
 
 const normalizeEvent = event => {
     return {
