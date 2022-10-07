@@ -1,6 +1,6 @@
 # Devops files
 
-![13429_ILL_DevOpsLoop](https://user-images.githubusercontent.com/95464654/194360078-8554be83-a0de-42f7-89f3-20fb95d3901d.png)
+
 
 All my projects in the DevOps area will be stored inside this repository, followed by a list of these projects so far:
 ## API Gateway using terraform (folder)
