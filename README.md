@@ -16,3 +16,13 @@ Within this file, there is a project created to use an API that makes use of a l
 
 
 OBS: this repository will be constantly updated, as existing projects are modified, and new projects are added. As per that to be able, this README will also be updated
+
+## Docker (folder)
+Over this folder, we will se a collection of my studies with docker, a tool used to work with containers
+### Content learned/practiced:
+* WSL/ WSL 2 -> concepts
+* Virtualization
+* Vangrant, by HashiCorp -> where did it come from
+* Heroku, from salesforce -> where did it come from
+* Emergence of Docker
+* Docker applications
