@@ -3,14 +3,10 @@ kind: Pod
 metadata:
   name: sistema
   labels:
-    name: myapp
+    app: sistema
 spec:
   containers:
-  - name: myapp
-    image: <Image>
-    resources:
-      limits:
-        memory: "128Mi"
-        cpu: "500m"
-    ports:
-      - containerPort: <Port>
+    - name: sistema-container
+      image: aluracursos/sistema-noticias:1
+      ports:
+        - containerPort: 80

@@ -2,6 +2,7 @@ available languages documentation/Linguas disponiveis na documentação:
 * English USA
 * Português BR
 
+# English USA:
 # Devops files (English documentation)
 
 
@@ -33,3 +34,44 @@ Over this folder, we will se a collection of my studies with docker, a tool used
 
 ## Kubernetes (folder)
 Over this file, we will see how kubernets works, and the importance of knowing about docker and containers for this content
+### Content learned/practiced:
+* How Kubernetes works
+* Creating Cluster
+* Creating Pods
+* Services SVC
+* Aplications
+
+# Português BR:
+Todos os meus projetos na área DevOps serão armazenados dentro deste repositório, seguidos de uma lista desses projetos até agora:
+## API Gateway usando terraform (pasta)
+Dentro desse arquivo, há um projeto criado para usar uma API que faz uso de uma função lambda acessando um banco de dados dentro da AWS. Todos os arquivos de código e diagrama estarão contidos dentro.
+### Conteúdo aprendido/praticado:
+* Terraforma
+* linguagem HCL
+* Códigos JavaScript
+* compreensão sobre o DynamoDB
+* compreensão sobre a função Lambda
+* compreensão sobre o serviço API Gateway
+
+
+
+OBS: este repositório será atualizado constantemente, à medida que os projetos existentes forem modificados e novos projetos forem adicionados. De acordo com isso, este README também será atualizado
+
+## Docker (pasta)
+Sobre esta pasta, veremos uma coleção de meus estudos com o docker, uma ferramenta usada para trabalhar com containers
+### Conteúdo aprendido/praticado:
+* WSL/ WSL 2 -> conceitos
+* Virtualização
+* Vangrant, da HashiCorp -> de onde veio
+* Heroku, da salesforce -> de onde veio
+* Surgimento do Docker
+* Aplicativos Docker
+
+## Kubernetes (pasta)
+Sobre este arquivo, veremos como funciona o kubernets, e a importância de conhecer o docker e os containers para este conteúdo
+### Conteúdo aprendido/praticado:
+* Como o Kubernetes funciona
+* Criação de cluster
+* Criando Pods
+* Serviços SVC
+* Aplicações
