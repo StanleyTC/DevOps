@@ -1,4 +1,8 @@
-# Devops files
+available languages documentation/Linguas disponiveis na documentação:
+* English USA
+* Português BR
+
+# Devops files (English documentation)
 
 
 
@@ -26,3 +30,6 @@ Over this folder, we will se a collection of my studies with docker, a tool used
 * Heroku, from salesforce -> where did it come from
 * Emergence of Docker
 * Docker applications
+
+## Kubernetes (folder)
+Over this file, we will see how kubernets works, and the importance of knowing about docker and containers for this content
