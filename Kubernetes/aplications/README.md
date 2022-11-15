@@ -102,7 +102,7 @@ Notice that the image of the database tells us that it is a relational database 
 
 Next, we will configure our service pod, which is svc-db-noticias.yaml
 
-## svc-db-news.yaml
+## svc-db-noticias.yaml
 ```
 apiVersion: v1
 kind: Service
@@ -119,6 +119,110 @@ spec:
 Now we will run the kubectl apply commands on these containers and that's it!
 when we access, we will have an error (we can see this with the kubectl get pods command) in db-news, with the kubectl describe db-news command, it will give us details of that pod, and it will show that the database container is restarting the all the time, so we will need to fiddle with mysql environment variables, we have to inform many things about these databases (This is something that will be done in another topic!)
 
+# Environment variables
+Let's talk about environment variables. Some services and images need these variables to be able to work, and this happens with our database, which was not running: the environment variables were missing.
+
+### How they are defined:
+🇧🇷
+container:
+  env:
+    - name: "insert name here"
+      value: "insert name here"
+🇧🇷
+They are defined inside the container block.
+
+In our case, we must set the MySQL_Password and MySQL_Database environment variables
+
+the complete block will look like this:
+```
+      env:
+        - name: "MYSQL_ROOT_PASSWORD"
+          value: "q1w2e3r4"
+        - name: "MYSQL_DATABASE"
+          value: "testing"
+        - name: "MYSQL_PASSWORD"
+          value: "q1w2e3r4"
+```
+
+when we give kubectl apply, we will have to inform the passwords, and now we will be able to mess with the database, through the use testing command (testing is the name I gave to this database) and we can go giving commands, since it is a MySQL database . Now we will have to configure this database so that information from news systems can be saved
+
+We will extract our configuration information out of our database definition file, through ConfigMap.
+ConfigMap is a Kubernetes service to store this information contained in env. For this, we will create a file called db-configmap.yaml and there we will do all the configuration. We will remove this env from db-noticias and put it inside db-configmap.yaml
+
+## db-configmap.yaml
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-configmap
+data:
+  MYSQL_ROOT_PASSWORD: "q1w2e3r4"
+  MYSQL_DATABASE: "testing"
+  MYSQL_PASSWORD: "q1w2e3r4"
+```
+and then we can give a kubectl apply to that pod of that service.
+
+## Applying the ConfigMap to the project
+We will now need a way to import the values ​​that are in the configmap file into the news pod container, which is our database in db-news; we will return it inside the db-noticias.yaml file and there we will put the env back, but instead of just putting the value of the environment variables, we will inform where it comes from, through the declarative variable "valueFrom:"
+it will be like this:
+```
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom: 
+            configMAPKEYREF:
+              name: db-configmap
+              key: MYSQL_ROOT_PASSWORD
+```
+As we want to declare all the variables, we can make a simpler declaration, making the entire configMap at once (because in the above block we only have one variable, but in principle there are 3, having to make the structure above makes the code unnecessarily large ), we will then use envFrom:
+
+```
+      envFrom:
+        - configMapRef:
+            name: db-configmap
+```
+
+Now we just need to make a reference to the database, for that, the database image we are using makes use of a php file (contained in the image itself, but as this image is no longer available, it will not be possible to demonstrate). In this file, we will have four variables that we will need to declare:
+* $host
+* $user
+* $password
+* $bank
+
+So we will need to create another ConfigMap, but this time for our system, and it will be the file sistema-configmap.yaml
+## sistema-configmap.yaml
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sistema-configmap
+data:
+  HOST_DB: svc-db-noticias:3306
+  USER_DB: root
+  PASS_DB: q1w2e3r4
+  DATABASE_DB: testing
+```
+And now we will import to the system.yaml file following the same envFrom import we were using:
+```
+      envFrom:
+        - configMapRef:
+            name: sistema-configmap
+```
+Now our application will work! now we will want the portal that we can access in the browser to communicate with the system to display the news. For this, it will be done via environment variable. interactively entering the portal image, there will also be a file asking for a variable, which will be IP. We will then have to create the portal-configmap.yaml
+## portal-configmap.yaml
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portal-configmap
+data:
+  IP_SISTEMA: http://localhost:30001
+```
+At portal.yaml, we will insert envFrom:
+```
+      envFrom:
+        - configMapRef:
+            name: portal-configmap
+```
+using apply command at terminal, our application can work withou problems!
 <p>.</p>
 <p>.</p>
 <p>.</p>
@@ -243,3 +347,109 @@ spec:
 ```
 Agora iremos rodar os comandos de kubectl apply nesses containers e pronto!
 ao acessarmos, teremos um erro (podemos ver isso com o comando kubectl get pods) no db-noticias, com o comando kubectl describe db-noticias, ele nos dará detalhes desse pod, e mostrará que o container do banco de dados está reiniciando o tempo todo, então precisaremos mexer nas variáveis de ambiente do mysql, temos que informar muitas coisas sobre esses banco de dados (Isso é algo que será feito em outro tópico!)
+
+# Variáveis de ambiente
+iremos falar sobre variáveis de ambientes. Alguns serviços e imagens necessitam dessas variáveis para poderem funcionar, e isso acontece com o nosso banco de dados, que não estava executando: faltou as variáveis de ambiente.
+
+### Como elas são definidas:
+```
+container:
+  env:
+    - name: "insert name here"
+      value: "insert name here"
+```
+São definidas dentro do bloco de container.
+
+No nosso caso, deveremos definir as variáveis de ambiente MySQL_Password e MySQL_Database
+
+o bloco completo ficará assim:
+```
+      env:
+        - name: "MYSQL_ROOT_PASSWORD"
+          value: "q1w2e3r4"
+        - name: "MYSQL_DATABASE"
+          value: "testing"
+        - name: "MYSQL_PASSWORD"
+          value: "q1w2e3r4"
+```
+
+quando dermos kubectl apply, teremos que informar as senhas, e agora poderemos mexer com o banco de dados, através do comando use testing (testing é o nome que eu dei para esse banco) e podemos ir dando comandos, já que é um banco MySQL. Agora teremos de configurar esse banco para que as informações de sistemas de noticias possam ficar salvas
+
+Iremos extrair nossas informações de configuração para fora do nosso arquivo de definição do banco de dados, através do ConfigMap.
+O ConfigMap é um serviço do kubernetes para guardar essas informações contidas em env. Para isso, iremos criar um arquivo chamado db-configmap.yaml e lá faremos toda a configuração. Removeremos esse env do db-noticias e colocaremos dentro do db-configmap.yaml
+
+## db-configmap.yaml
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-configmap
+data:
+  MYSQL_ROOT_PASSWORD: "q1w2e3r4"
+  MYSQL_DATABASE: "testing"
+  MYSQL_PASSWORD: "q1w2e3r4"
+```
+e depois podemos dar um kubectl apply para esse pod desse serviço.
+
+## Aplicando o ConfigMap ao projeto
+Precisaremos agora de uma maneira de importar os valores que estão no arquivo de configmap para o container do pod de noticias, que é o nosso banco de dados em db-noticias; retornaremos dentro do arquivo db-noticias.yaml e lá colocaremos o env de volta, mas em vez de botarmos apenas o value das variáveis de ambiente, nós iremos informar de onde vem, através da variável declarativa "valueFrom:"
+Ficará assim
+```
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom: 
+            configMAPKEYREF:
+              name: db-configmap
+              key: MYSQL_ROOT_PASSWORD
+```
+Como queremos fazer declaração de todas as variáveis, podemos fazer uma declaração mais simples, fazendo toda a configMap de uma vez (porque no bloco acima só temos uma variável, mas a principio são 3, ter que fazer a estrutura acima deixa o código desnecessáriamente grande), iremos então usar envFrom:
+```
+      envFrom:
+        - configMapRef:
+            name: db-configmap
+```
+Agora só falta fazermos a referência ao banco, para isso, a imagem do banco de dados que estamos usando faz uso de um arquivo em php (contido na própria imagem, mas como essa imagem não está mais disponivel, não será possivel demonstrar). Nesse arquivo, teremos quatro variáveis que precisaremos declarar:
+* $host
+* $usuario
+* $senha
+* $banco
+
+Portanto precisaremos criar outro ConfigMap, mas dessa vez para o nosso sistema, e será o arquivo sistema-configmap.yaml
+
+## sistema-configmap.yaml
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sistema-configmap
+data:
+  HOST_DB: svc-db-noticias:3306
+  USER_DB: root
+  PASS_DB: q1w2e3r4
+  DATABASE_DB: testing
+```
+E agora iremos importar para o arquivo de sistema.yaml seguindo o mesmo esquema de importação de envFrom:
+```
+      envFrom:
+        - configMapRef:
+            name: sistema-configmap
+```
+
+Agora sim nossa aplicação funcionará! agora iremos querer que o portal que conseguimos acessar no navegador se comunique com o sistema para fazer a exibição da noticia. Para isso, será feito via variável de ambiente. entrando de modo interativo na imagem do portal, lá também terá um arquivo pedindo uma variável, que será de IP. Teremos então que criar o portal-configmap.yaml
+
+## portal-configmap.yaml
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portal-configmap
+data:
+  IP_SISTEMA: http://localhost:30001
+```
+No portal.yaml, colocaremos envFrom:
+```
+      envFrom:
+        - configMapRef:
+            name: portal-configmap
+```
+dando um apply em tudo, agora sim nossa aplicação funcionará sem problemas!
